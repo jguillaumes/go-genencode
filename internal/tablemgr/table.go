@@ -43,12 +43,12 @@ func GenerateDecoder(in io.Reader) ([]int, int, int, int, error) {
 	return table, oklines, kolines, comments, nil
 }
 
-func GenerateEncoder(decoderTable []byte) ([]byte, error) {
-	table := make([]byte, 256)
+func GenerateEncoder(decoderTable []int) ([]int, error) {
+	table := make([]int, 256)
 
 	// Iterate over the decoder slice content
 	for i, v := range decoderTable {
-		table[v] = byte(i)
+		table[v] = i
 	}
 	return table, nil
 }

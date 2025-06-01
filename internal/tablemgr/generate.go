@@ -5,7 +5,12 @@ import (
 	"fmt"
 )
 
-func GenerateEBCDICtoASCII(table []int, name string, withEuro bool) string {
+type TableType int
+
+const EncodeTable TableType = 1
+const DecodeTable TableType = 2
+
+func GenerateTable(table []int, name string, tableType TableType, euroValue string) string {
 	var output string = ""
 	for i := 0; i < 16; i++ {
 		var line string = ""
@@ -22,9 +27,17 @@ func GenerateEBCDICtoASCII(table []int, name string, withEuro bool) string {
 		}
 	}
 	var outBuff bytes.Buffer
-	outBuff.WriteString(fmt.Sprintf("\t%s: unicodeToEbcdicMap{\n", name))
-	outBuff.WriteString(fmt.Sprintf("\t\tHasEuroPatch: %t\n", withEuro))
-	outBuff.WriteString(fmt.Sprintln("\t\tEuroChar:     0x9F,"))
+	if tableType == DecodeTable {
+		outBuff.WriteString(fmt.Sprintf("\t%s: unicodeToEbcdicMap{\n", name))
+	} else {
+		outBuff.WriteString(fmt.Sprintf("\t%s: {\n", name))
+	}
+	if euroValue == "" {
+		outBuff.WriteString("\t\tHasEuroPatch: false\n")
+	} else {
+		outBuff.WriteString("\t\tHasEuroPatch: true\n")
+		outBuff.WriteString(fmt.Sprintf("\t\tEuroChar:     %s,\n", euroValue))
+	}
 	outBuff.WriteString(fmt.Sprintln("\t\tMap: []byte{"))
 	outBuff.WriteString(output)
 	outBuff.WriteString("\t\t)\n\t},\n")
