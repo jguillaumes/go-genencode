@@ -19,28 +19,27 @@ func GenerateTable(table []int, name string, tableType TableType, euroValue stri
 		}
 		start := 16 * i
 		end := 16*i + 15
-		if i < 15 {
-			output += fmt.Sprintf("\t\t\t%s // 0x%02x..0x%02x\n", line, start, end)
-		} else {
-			line = line[:len(line)-1]
-			output += fmt.Sprintf("\t\t\t%s  // 0x%02x..0x%02x\n", line, start, end)
-		}
+		output += fmt.Sprintf("\t\t\t%s // 0x%02x..0x%02x\n", line, start, end)
 	}
 	var outBuff bytes.Buffer
-	if tableType == DecodeTable {
+	if tableType == EncodeTable {
 		outBuff.WriteString(fmt.Sprintf("\t%s: unicodeToEbcdicMap{\n", name))
 	} else {
 		outBuff.WriteString(fmt.Sprintf("\t%s: {\n", name))
 	}
 	if euroValue == "" {
-		outBuff.WriteString("\t\tHasEuroPatch: false\n")
+		outBuff.WriteString("\t\tHasEuroPatch: false,\n")
 	} else {
-		outBuff.WriteString("\t\tHasEuroPatch: true\n")
+		outBuff.WriteString("\t\tHasEuroPatch: true,\n")
 		outBuff.WriteString(fmt.Sprintf("\t\tEuroChar:     %s,\n", euroValue))
 	}
-	outBuff.WriteString(fmt.Sprintln("\t\tMap: []byte{"))
+	if tableType == EncodeTable {
+		outBuff.WriteString(fmt.Sprintln("\t\tMap: []byte{"))
+	} else {
+		outBuff.WriteString(fmt.Sprintln("\t\tMap: []rune{"))
+	}
 	outBuff.WriteString(output)
-	outBuff.WriteString("\t\t)\n\t},\n")
+	outBuff.WriteString("\t\t}\n\t},\n")
 
 	return outBuff.String()
 }

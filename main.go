@@ -35,10 +35,12 @@ func main() {
 	if *outFile == "" {
 		outw = io.Writer(os.Stdout)
 	} else {
-		outw, err = os.Create(*outFile)
+		outf, err := os.Create(*outFile)
 		if err != nil {
 			log.Fatalf("Error creating output file %s : %v\n", *outFile, err)
 		}
+		defer outf.Close()
+		outw = outf
 	}
 
 	dect, ok, nok, comm, err := tablemgr.GenerateDecoder(tableFile)

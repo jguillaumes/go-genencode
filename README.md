@@ -77,3 +77,7 @@ This is an example of the code generated for the codepage IBM-1047:
 		)
 	},
 ````
+
+## Known bugs
+
+The Euro support is bugged at this time
